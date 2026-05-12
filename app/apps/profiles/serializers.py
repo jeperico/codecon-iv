@@ -1,4 +1,4 @@
-from .models import User
+from .models import User, Queue, QueueUser, BookOffer
 from django.db import transaction
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
@@ -9,7 +9,26 @@ class UserSerializer(serializers.ModelSerializer):
   class Meta:
     model = User
     fields = '__all__'
+    
+class QueueSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = Queue
+    fields = '__all__'
 
+class QueueUserSerializer(serializers.ModelSerializer):
+  user = UserSerializer()
+  queue = QueueSerializer()
+
+  class Meta:
+    model = QueueUser
+    fields = '__all__'
+
+class BookOfferSerializer(serializers.ModelSerializer):
+  queue_user_position = QueueUserSerializer
+  
+  class Meta:
+    model = BookOffer
+    fields = '__all__'
 
 class UserRegisterSerializer(serializers.ModelSerializer):
   password = serializers.CharField(

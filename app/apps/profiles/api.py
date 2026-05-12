@@ -1,10 +1,14 @@
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .models import User
+from .models import User, Queue, QueueUser, BookOffer
 from .serializers import (
+  QueueSerializer,
+  QueueUserSerializer,
+  BookOfferSerializer,
   UserSerializer,
   UserRegisterSerializer,
   ProfileTokenObtainPairSerializer,
 )
+
 from rest_framework import (
   generics,
   mixins,
@@ -38,7 +42,7 @@ class UserViewSet(
     serializer.is_valid(raise_exception=True)
     serializer.save()
     return Response(serializer.data)
-
+  
 
 class UserRegisterView(
   mixins.CreateModelMixin,
@@ -54,3 +58,24 @@ class UserRegisterView(
 
 class ProfileTokenObtainPairView(TokenObtainPairView):
   serializer_class = ProfileTokenObtainPairSerializer
+
+class QueueViewSet(viewsets.ModelViewSet):
+    queryset = Queue.objects.all()
+    serializer_class = QueueSerializer
+
+    def get_queryset(self):
+        return self.queryset.all()
+    
+class QueueUserViewSet(viewsets.ModelViewSet):
+    queryset = QueueUser.objects.all()
+    serializer_class = QueueUserSerializer
+
+    def get_queryset(self):
+        return self.queryset.all()
+    
+class BookOfferViewSet(viewsets.ModelViewSet):
+    queryset = BookOffer.objects.all()
+    serializer_class = BookOfferSerializer
+
+    def get_queryset(self):
+        return self.queryset.all()
