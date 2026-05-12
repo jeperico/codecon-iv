@@ -89,4 +89,4 @@ class BookOffer(models.Model):
   )
   queue_user_position = models.ForeignKey(QueueUser, related_name='queue_user', on_delete=models.CASCADE)
   sold = models.BooleanField()
-  price = models.IntegerChoices()
+  price = models.IntegerField()
