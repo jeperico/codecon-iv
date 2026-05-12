@@ -47,3 +47,46 @@ class User(AbstractBaseUser, PermissionsMixin):
 
   def __str__(self):
       return self.name
+
+class Queue(models.Model):
+  id = models.UUIDField(
+    primary_key=True,
+    default=uuid.uuid4,
+    editable=False,
+  )
+  nome = models.CharField(max_length=255)
+  description = models.EmailField(unique=True)
+
+  created_at = models.DateTimeField(
+    auto_now_add=True,
+  )
+  updated_at = models.DateTimeField(
+    auto_now=True,
+  )
+
+class QueueUser(models.Model):
+  id = models.UUIDField(
+    primary_key=True,
+    default=uuid.uuid4,
+    editable=False,
+  )
+  position = models.IntegerField()
+  user = models.ForeignKey(User, related_name='users', on_delete=models.CASCADE)
+  queue = models.ForeignKey(Queue, related_name='queues', on_delete=models.CASCADE)
+  created_at = models.DateTimeField(
+    auto_now_add=True,
+  )
+  updated_at = models.DateTimeField(
+    auto_now=True,
+  )
+
+class BookOffer(models.Model):
+
+  id = models.UUIDField(
+    primary_key=True,
+    default=uuid.uuid4,
+    editable=False,
+  )
+  queue_user_position = models.ForeignKey(QueueUser, related_name='queue_user', on_delete=models.CASCADE)
+  sold = models.BooleanField()
+  price = models.IntegerChoices()
