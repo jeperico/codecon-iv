@@ -1,4 +1,6 @@
+from datetime import timedelta
 from pathlib import Path
+
 from decouple import config
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,9 +23,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    # "rest_framework_simplejwt",
-    # "rest_framework_simplejwt.token_blacklist",
-    "cuser",
+    'rest_framework_simplejwt',
+    'cuser',
     'corsheaders',
     'drf_spectacular',
     'apps.profiles',
@@ -64,6 +65,18 @@ WSGI_APPLICATION = 'app.wsgi.application'
 
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=12),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
 DATABASES = {

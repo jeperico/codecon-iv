@@ -1,34 +1,53 @@
-from .models import User, Queue, QueueUser, BookOffer
+from django.contrib.auth.password_validation import validate_password
 from django.db import transaction
 from rest_framework import serializers
-from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
+from .models import BookOffer, Queue, QueueUser, User
 
 
 class UserSerializer(serializers.ModelSerializer):
   class Meta:
     model = User
-    fields = '__all__'
-    
+    fields = ['id', 'name', 'email', 'is_active', 'is_staff', 'created_at', 'updated_at']
+    read_only_fields = fields
+
+
 class QueueSerializer(serializers.ModelSerializer):
   class Meta:
     model = Queue
-    fields = '__all__'
+    fields = ['id', 'name', 'description', 'created_at', 'updated_at']
+
 
 class QueueUserSerializer(serializers.ModelSerializer):
-  user = UserSerializer()
-  queue = QueueSerializer()
+  user = UserSerializer(read_only=True)
+  queue = QueueSerializer(read_only=True)
 
   class Meta:
     model = QueueUser
-    fields = '__all__'
+    fields = ['id', 'position', 'user', 'queue', 'created_at', 'updated_at']
+    read_only_fields = fields
+
 
 class BookOfferSerializer(serializers.ModelSerializer):
-  queue_user_position = QueueUserSerializer
-  
+  queue_user = QueueUserSerializer(read_only=True)
+  queue = QueueSerializer(read_only=True)
+  seller = UserSerializer(read_only=True)
+  buyer = UserSerializer(read_only=True)
+
   class Meta:
     model = BookOffer
-    fields = '__all__'
+    fields = [
+      'id', 'queue', 'queue_user', 'seller', 'buyer',
+      'sold', 'price', 'created_at', 'updated_at',
+    ]
+    read_only_fields = fields
+
+
+class BookOfferCreateSerializer(serializers.Serializer):
+  queue = serializers.PrimaryKeyRelatedField(queryset=Queue.objects.all())
+  price = serializers.IntegerField(min_value=1)
+
 
 class UserRegisterSerializer(serializers.ModelSerializer):
   password = serializers.CharField(
@@ -43,6 +62,8 @@ class UserRegisterSerializer(serializers.ModelSerializer):
     extra_kwargs = {
       'password': {'write_only': True},
       'id': {'read_only': True},
+      'created_at': {'read_only': True},
+      'updated_at': {'read_only': True},
     }
 
   def create(self, validated_data):
@@ -57,6 +78,5 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 class ProfileTokenObtainPairSerializer(TokenObtainPairSerializer):
   def validate(self, attrs):
     data = super().validate(attrs)
-    data["user"] = UserSerializer(self.user).data
-
+    data['user'] = UserSerializer(self.user).data
     return data

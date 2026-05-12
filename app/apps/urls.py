@@ -4,23 +4,24 @@ from drf_spectacular.views import (
   SpectacularRedocView,
   SpectacularSwaggerView,
 )
+from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
 from .profiles.api import ProfileTokenObtainPairView
 
 urlpatterns = [
   path(
     'schema/',
-    SpectacularAPIView.as_view(),
+    SpectacularAPIView.as_view(permission_classes=[AllowAny], authentication_classes=[]),
     name='schema'
   ),
   path(
     'schema/swagger/',
-    SpectacularSwaggerView.as_view(url_name='schema'),
+    SpectacularSwaggerView.as_view(url_name='schema', permission_classes=[AllowAny], authentication_classes=[]),
     name='swagger-ui'
   ),
   path(
     'schema/redoc/',
-    SpectacularRedocView.as_view(url_name='schema'),
+    SpectacularRedocView.as_view(url_name='schema', permission_classes=[AllowAny], authentication_classes=[]),
     name='redoc'
   ),
   path('profiles/', include('apps.profiles.urls')),

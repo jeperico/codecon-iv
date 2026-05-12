@@ -5,8 +5,10 @@ class DatedModel(models.Model):
   created_at = models.DateTimeField(
     auto_now_add=True,
     editable=False,
+    null=True
   )
   updated_at = models.DateTimeField(
+    null=True,
     auto_now=True,
   )
   class Meta: 
